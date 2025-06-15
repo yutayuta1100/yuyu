@@ -1,65 +1,18 @@
-const express = require('express');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const dotenv = require('dotenv');
-const path = require('path');
+export default async function handler(req, res) {
+    // CORSヘッダー
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-// 環境変数の読み込み
-dotenv.config();
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// セキュリティヘッダーの設定
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://pagead2.googlesyndication.com"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'"],
-            fontSrc: ["'self'"],
-            objectSrc: ["'none'"],
-            upgradeInsecureRequests: []
-        }
+    // OPTIONSリクエストの処理
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
     }
-}));
 
-// CORS設定（本番環境では特定のドメインのみ許可）
-const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-        ? process.env.ALLOWED_ORIGIN || true
-        : ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    credentials: true
-};
-app.use(cors(corsOptions));
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
 
-// JSONパーサー（画像アップロードのため容量を増やす）
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-// レート制限（1時間あたり100リクエストまで）
-const limiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1時間
-    max: 100,
-    message: 'リクエスト制限を超えました。しばらくしてから再度お試しください。'
-});
-
-// APIエンドポイントにレート制限を適用
-app.use('/api/', limiter);
-
-// 静的ファイルの提供
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ルートパスの設定
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// ICF分類APIエンドポイント
-app.post('/api/classify', async (req, res) => {
     try {
         const { patientData, images } = req.body;
         
@@ -70,9 +23,8 @@ app.post('/api/classify', async (req, res) => {
             });
         }
         
-        // プロンプトの構築（script.jsから移植）
+        // プロンプトの構築
         const hasTextData = Object.values(patientData || {}).some(value => value && value.toString().trim() !== '');
-        
         const prompt = buildPrompt(hasTextData, patientData, images);
         
         // OpenAI APIコール
@@ -125,7 +77,7 @@ app.post('/api/classify', async (req, res) => {
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             const classification = JSON.parse(jsonMatch[0]);
-            res.json({ classification });
+            res.status(200).json({ classification });
         } else {
             throw new Error('レスポンスからJSON形式のデータを抽出できませんでした');
         }
@@ -136,7 +88,7 @@ app.post('/api/classify', async (req, res) => {
             error: 'サーバーエラーが発生しました'
         });
     }
-});
+}
 
 // プロンプト構築関数
 function buildPrompt(hasTextData, patientData, images) {
@@ -205,13 +157,3 @@ ${images && images.length > 0 ? `画像から患者の医療記録、検査結�
 - 患者の状態について、観察された事実だけでなく、それが日常生活にどのような影響を与えているかも記述してください
 `;
 }
-
-// サーバー起動（Vercel以外の環境で）
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`サーバーが起動しました: http://localhost:${PORT}`);
-    });
-}
-
-// Vercel用にappをエクスポート
-module.exports = app;
