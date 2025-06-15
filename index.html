@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICF自動分類システム</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ICF自動分類システム</h1>
+            <p>患者情報を入力して、ICF（国際生活機能分類）に基づく分類を行います</p>
+        </header>
+
+        <!-- Google AdSense 横長バナー広告 (728x90) -->
+        <div class="ad-container ad-horizontal">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+
+        <main>
+            <section class="input-section">
+                <h2>患者情報入力</h2>
+                <p style="margin-bottom: 20px; color: #7f8c8d;">※画像のみ、またはテキスト入力のみ、両方の組み合わせでもICF分類が可能です</p>
+                <form id="patientForm">
+                    <div class="form-group">
+                        <label for="patientId">患者ID（任意）</label>
+                        <input type="text" id="patientId" name="patientId">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">年齢（任意）</label>
+                        <input type="number" id="age" name="age" min="0" max="150">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">性別（任意）</label>
+                        <select id="gender" name="gender">
+                            <option value="">選択してください</option>
+                            <option value="male">男性</option>
+                            <option value="female">女性</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="diagnosis">診断名（任意）</label>
+                        <input type="text" id="diagnosis" name="diagnosis">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="symptoms">症状・状態（任意）</label>
+                        <textarea id="symptoms" name="symptoms" rows="4" placeholder="患者の症状、身体機能、活動状況、参加状況などを詳しく記載してください"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="environmentalFactors">環境因子（任意）</label>
+                        <textarea id="environmentalFactors" name="environmentalFactors" rows="3" placeholder="家族構成、住環境、社会的支援など"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="personalFactors">個人因子（任意）</label>
+                        <textarea id="personalFactors" name="personalFactors" rows="3" placeholder="職業、趣味、生活習慣など"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageUpload">画像アップロード（任意）</label>
+                        <input type="file" id="imageUpload" name="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" multiple>
+                        <small>医療記録や検査結果の画像をアップロードできます（複数可）<br>対応形式: PNG, JPEG, GIF, WebP</small>
+                    </div>
+
+                    <button type="submit" class="submit-btn">ICF分類を実行</button>
+                </form>
+            </section>
+
+            <section id="results" class="results-section" style="display: none;">
+                <h2>ICF分類結果</h2>
+                <div id="resultsContent"></div>
+            </section>
+
+        </main>
+
+        <!-- Google AdSense フッター広告 -->
+        <div class="ad-container ad-footer">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="YYYYYYYYYY"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    </div>
+
+    <!-- Google AdSense スクリプト -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+         crossorigin="anonymous"></script>
+    <script>
+         // 広告を初期化
+         (adsbygoogle = window.adsbygoogle || []).push({});
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>
