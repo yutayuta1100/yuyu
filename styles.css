@@ -244,6 +244,7 @@ textarea {
 }
 
 /* 広告のプレースホルダー（AdSense承認前） */
+/* コメントアウト - 実際の広告を表示するため
 .ad-container::before {
     content: "広告スペース";
     color: #999;
@@ -251,6 +252,7 @@ textarea {
     display: block;
     padding: 20px;
 }
+*/
 
 .adsbygoogle {
     background: transparent;
