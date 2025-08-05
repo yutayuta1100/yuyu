@@ -1,6 +1,106 @@
 // クライアントサイドのスクリプト - APIキーは含まれていません
 
+// 言語設定
+const translations = {
+    ja: {
+        title: "ICF自動分類システム",
+        subtitle: "患者情報を入力して、ICF（国際生活機能分類）に基づく分類を行います",
+        inputTitle: "患者情報入力",
+        inputNote: "※画像のみ、またはテキスト入力のみ、両方の組み合わせでもICF分類が可能です",
+        patientId: "患者ID",
+        age: "年齢",
+        gender: "性別",
+        selectOption: "選択してください",
+        male: "男性",
+        female: "女性",
+        other: "その他",
+        diagnosis: "診断名",
+        symptoms: "症状・状態",
+        symptomsPlaceholder: "患者の症状、身体機能、活動状況、参加状況などを詳しく記載してください",
+        environmentalFactors: "環境因子",
+        environmentalFactorsPlaceholder: "家族構成、住環境、社会的支援など",
+        personalFactors: "個人因子",
+        personalFactorsPlaceholder: "職業、趣味、生活習慣など",
+        imageUpload: "画像アップロード",
+        imageUploadHelp: "医療記録や検査結果の画像をアップロードできます（複数可）<br>対応形式: PNG, JPEG, GIF, WebP",
+        submit: "ICF分類を実行",
+        resultsTitle: "ICF分類結果",
+        loading: "分類を実行しています...",
+        error: "エラーが発生しました: ",
+        apiError: "APIエラー: ",
+        imageFormatError: "以下のファイルはサポートされていません:",
+        inputRequired: "テキスト情報または画像のいずれかを入力してください"
+    },
+    en: {
+        title: "ICF Automatic Classification System",
+        subtitle: "Enter patient information for classification based on ICF (International Classification of Functioning)",
+        inputTitle: "Patient Information Input",
+        inputNote: "※ICF classification is possible with images only, text input only, or a combination of both",
+        patientId: "Patient ID",
+        age: "Age",
+        gender: "Gender",
+        selectOption: "Please select",
+        male: "Male",
+        female: "Female",
+        other: "Other",
+        diagnosis: "Diagnosis",
+        symptoms: "Symptoms/Condition",
+        symptomsPlaceholder: "Please describe the patient's symptoms, physical function, activity status, participation status, etc. in detail",
+        environmentalFactors: "Environmental Factors",
+        environmentalFactorsPlaceholder: "Family structure, living environment, social support, etc.",
+        personalFactors: "Personal Factors",
+        personalFactorsPlaceholder: "Occupation, hobbies, lifestyle habits, etc.",
+        imageUpload: "Image Upload",
+        imageUploadHelp: "You can upload images of medical records or test results (multiple allowed)<br>Supported formats: PNG, JPEG, GIF, WebP",
+        submit: "Execute ICF Classification",
+        resultsTitle: "ICF Classification Results",
+        loading: "Performing classification...",
+        error: "An error occurred: ",
+        apiError: "API Error: ",
+        imageFormatError: "The following files are not supported:",
+        inputRequired: "Please enter either text information or images"
+    }
+};
+
+let currentLang = localStorage.getItem('language') || 'ja';
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('language', lang);
+    
+    // テキストコンテンツを更新
+    document.querySelectorAll('[data-i18n]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            elem.innerHTML = translations[lang][key];
+        }
+    });
+    
+    // プレースホルダーを更新
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+            elem.placeholder = translations[lang][key];
+        }
+    });
+    
+    // 言語切り替えボタンの表示を更新
+    document.querySelector('.lang-ja').style.display = lang === 'ja' ? 'inline' : 'none';
+    document.querySelector('.lang-en').style.display = lang === 'en' ? 'inline' : 'none';
+}
+
+function translate(key) {
+    return translations[currentLang][key] || key;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // 初期言語設定
+    setLanguage(currentLang);
+    
+    // 言語切り替えボタンのイベント
+    document.getElementById('langToggle').addEventListener('click', () => {
+        setLanguage(currentLang === 'ja' ? 'en' : 'ja');
+    });
     
     // ファイル選択時の動作確認とファイル形式チェック
     const imageUpload = document.getElementById('imageUpload');
@@ -16,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (invalidFiles.length > 0) {
-            alert(`以下のファイルはサポートされていません:\n${invalidFiles.join('\n')}\n\n対応形式: PNG, JPEG, GIF, WebP`);
+            alert(`${translate('imageFormatError')}\n${invalidFiles.join('\n')}\n\n${currentLang === 'ja' ? '対応形式: PNG, JPEG, GIF, WebP' : 'Supported formats: PNG, JPEG, GIF, WebP'}`);
             e.target.value = ''; // ファイル選択をクリア
         }
     });
@@ -35,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     
     if (!hasTextInput && imageFiles.length === 0) {
-        alert('テキスト情報または画像のいずれかを入力してください');
+        alert(translate('inputRequired'));
         return;
     }
     
@@ -65,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContent = document.getElementById('resultsContent');
     
     resultsSection.style.display = 'block';
-    resultsContent.innerHTML = '<div class="loading">分類中...</div>';
+    resultsContent.innerHTML = `<div class="loading">${translate('loading')}</div>`;
     
     try {
         // サーバーにAPIリクエストを送信
@@ -85,14 +185,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || 'API呼び出しに失敗しました');
+            throw new Error(error.error || (currentLang === 'ja' ? 'API呼び出しに失敗しました' : 'API call failed'));
         }
         
         const data = await response.json();
         displayResults(data.classification);
     } catch (error) {
         console.error('Classification error:', error);
-        resultsContent.innerHTML = `<div class="error">エラーが発生しました: ${error.message}</div>`;
+        resultsContent.innerHTML = `<div class="error">${translate('error')}${error.message}</div>`;
     }
 });
 

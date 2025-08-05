@@ -11,8 +11,16 @@
 <body>
     <div class="container">
         <header>
-            <h1>ICF自動分類システム</h1>
-            <p>患者情報を入力して、ICF（国際生活機能分類）に基づく分類を行います</p>
+            <div class="header-content">
+                <div>
+                    <h1 data-i18n="title">ICF自動分類システム</h1>
+                    <p data-i18n="subtitle">患者情報を入力して、ICF（国際生活機能分類）に基づく分類を行います</p>
+                </div>
+                <button id="langToggle" class="lang-toggle">
+                    <span class="lang-ja">English</span>
+                    <span class="lang-en" style="display: none;">日本語</span>
+                </button>
+            </div>
         </header>
 
         <!-- Google AdSense 横長バナー広告 (728x90) -->
@@ -27,61 +35,61 @@
 
         <main>
             <section class="input-section">
-                <h2>患者情報入力</h2>
-                <p style="margin-bottom: 20px; color: #7f8c8d;">※画像のみ、またはテキスト入力のみ、両方の組み合わせでもICF分類が可能です</p>
+                <h2 data-i18n="inputTitle">患者情報入力</h2>
+                <p style="margin-bottom: 20px; color: #7f8c8d;" data-i18n="inputNote">※画像のみ、またはテキスト入力のみ、両方の組み合わせでもICF分類が可能です</p>
                 <form id="patientForm">
                     <div class="form-group">
-                        <label for="patientId">患者ID</label>
+                        <label for="patientId" data-i18n="patientId">患者ID</label>
                         <input type="text" id="patientId" name="patientId">
                     </div>
 
                     <div class="form-group">
-                        <label for="age">年齢</label>
+                        <label for="age" data-i18n="age">年齢</label>
                         <input type="number" id="age" name="age" min="0" max="150">
                     </div>
 
                     <div class="form-group">
-                        <label for="gender">性別</label>
+                        <label for="gender" data-i18n="gender">性別</label>
                         <select id="gender" name="gender">
-                            <option value="">選択してください</option>
-                            <option value="male">男性</option>
-                            <option value="female">女性</option>
-                            <option value="other">その他</option>
+                            <option value="" data-i18n="selectOption">選択してください</option>
+                            <option value="male" data-i18n="male">男性</option>
+                            <option value="female" data-i18n="female">女性</option>
+                            <option value="other" data-i18n="other">その他</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="diagnosis">診断名</label>
+                        <label for="diagnosis" data-i18n="diagnosis">診断名</label>
                         <input type="text" id="diagnosis" name="diagnosis">
                     </div>
 
                     <div class="form-group">
-                        <label for="symptoms">症状・状態</label>
-                        <textarea id="symptoms" name="symptoms" rows="4" placeholder="患者の症状、身体機能、活動状況、参加状況などを詳しく記載してください"></textarea>
+                        <label for="symptoms" data-i18n="symptoms">症状・状態</label>
+                        <textarea id="symptoms" name="symptoms" rows="4" placeholder="患者の症状、身体機能、活動状況、参加状況などを詳しく記載してください" data-i18n-placeholder="symptomsPlaceholder"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="environmentalFactors">環境因子</label>
-                        <textarea id="environmentalFactors" name="environmentalFactors" rows="3" placeholder="家族構成、住環境、社会的支援など"></textarea>
+                        <label for="environmentalFactors" data-i18n="environmentalFactors">環境因子</label>
+                        <textarea id="environmentalFactors" name="environmentalFactors" rows="3" placeholder="家族構成、住環境、社会的支援など" data-i18n-placeholder="environmentalFactorsPlaceholder"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="personalFactors">個人因子</label>
-                        <textarea id="personalFactors" name="personalFactors" rows="3" placeholder="職業、趣味、生活習慣など"></textarea>
+                        <label for="personalFactors" data-i18n="personalFactors">個人因子</label>
+                        <textarea id="personalFactors" name="personalFactors" rows="3" placeholder="職業、趣味、生活習慣など" data-i18n-placeholder="personalFactorsPlaceholder"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="imageUpload">画像アップロード</label>
+                        <label for="imageUpload" data-i18n="imageUpload">画像アップロード</label>
                         <input type="file" id="imageUpload" name="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" multiple>
-                        <small>医療記録や検査結果の画像をアップロードできます（複数可）<br>対応形式: PNG, JPEG, GIF, WebP</small>
+                        <small data-i18n="imageUploadHelp">医療記録や検査結果の画像をアップロードできます（複数可）<br>対応形式: PNG, JPEG, GIF, WebP</small>
                     </div>
 
-                    <button type="submit" class="submit-btn">ICF分類を実行</button>
+                    <button type="submit" class="submit-btn" data-i18n="submit">ICF分類を実行</button>
                 </form>
             </section>
 
             <section id="results" class="results-section" style="display: none;">
-                <h2>ICF分類結果</h2>
+                <h2 data-i18n="resultsTitle">ICF分類結果</h2>
                 <div id="resultsContent"></div>
             </section>
 
