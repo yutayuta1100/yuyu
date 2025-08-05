@@ -51,11 +51,11 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // 静的ファイルの提供
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname)));
 
 // ルートパスの設定
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ICF分類APIエンドポイント
