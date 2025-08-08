@@ -283,6 +283,28 @@ textarea {
     background: transparent;
 }
 
+/* フッター */
+.site-footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.site-footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    text-decoration: underline;
+}
+
+.site-footer .separator {
+    margin: 0 15px;
+    color: #bdc3c7;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 10px;

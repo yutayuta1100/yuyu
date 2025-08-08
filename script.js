@@ -29,7 +29,9 @@ const translations = {
         error: "エラーが発生しました: ",
         apiError: "APIエラー: ",
         imageFormatError: "以下のファイルはサポートされていません:",
-        inputRequired: "テキスト情報または画像のいずれかを入力してください"
+        inputRequired: "テキスト情報または画像のいずれかを入力してください",
+        termsLink: "利用規約・プライバシーポリシー",
+        copyright: "© 2024 ICF自動分類システム"
     },
     en: {
         title: "ICF Automatic Classification System",
@@ -58,7 +60,9 @@ const translations = {
         error: "An error occurred: ",
         apiError: "API Error: ",
         imageFormatError: "The following files are not supported:",
-        inputRequired: "Please enter either text information or images"
+        inputRequired: "Please enter either text information or images",
+        termsLink: "Terms of Service & Privacy Policy",
+        copyright: "© 2024 ICF Automatic Classification System"
     }
 };
 
