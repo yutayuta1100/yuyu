@@ -16,11 +16,19 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://pagead2.googlesyndication.com"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'"],
-            fontSrc: ["'self'"],
+            scriptSrc: [
+                "'self'", 
+                "'unsafe-inline'", 
+                "https://pagead2.googlesyndication.com",
+                "https://googleads.g.doubleclick.net",
+                "https://www.google.com",
+                "https://adservice.google.com"
+            ],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            imgSrc: ["'self'", "data:", "https:", "*.google.com", "*.googleusercontent.com", "*.gstatic.com"],
+            connectSrc: ["'self'", "https://pagead2.googlesyndication.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            frameSrc: ["'self'", "https://googleads.g.doubleclick.net", "https://www.google.com"],
             objectSrc: ["'none'"],
             upgradeInsecureRequests: []
         }
@@ -58,6 +66,46 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// 入力のサニタイジング関数
+function sanitizeInput(input) {
+    if (typeof input !== 'string') return input;
+    // HTMLタグの除去と基本的なサニタイジング
+    return input
+        .replace(/<[^>]*>/g, '') // HTMLタグを除去
+        .replace(/[<>\"']/g, '') // 特殊文字を除去
+        .trim()
+        .slice(0, 5000); // 最大文字数制限
+}
+
+// 患者データのサニタイジング
+function sanitizePatientData(data) {
+    if (!data) return null;
+    
+    const sanitized = {};
+    const allowedFields = ['patientId', 'age', 'gender', 'diagnosis', 'symptoms', 'environmentalFactors', 'personalFactors'];
+    
+    for (const field of allowedFields) {
+        if (data[field]) {
+            if (field === 'age') {
+                // 年齢の検証
+                const age = parseInt(data[field]);
+                if (!isNaN(age) && age >= 0 && age <= 150) {
+                    sanitized[field] = age;
+                }
+            } else if (field === 'gender') {
+                // 性別の検証
+                if (['male', 'female', 'other'].includes(data[field])) {
+                    sanitized[field] = data[field];
+                }
+            } else {
+                sanitized[field] = sanitizeInput(data[field]);
+            }
+        }
+    }
+    
+    return sanitized;
+}
+
 // ICF分類APIエンドポイント
 app.post('/api/classify', async (req, res) => {
     try {
@@ -70,10 +118,45 @@ app.post('/api/classify', async (req, res) => {
             });
         }
         
-        // プロンプトの構築（script.jsから移植）
-        const hasTextData = Object.values(patientData || {}).some(value => value && value.toString().trim() !== '');
+        // 画像の検証（最大5枚、各10MBまで）
+        if (images && images.length > 0) {
+            if (images.length > 5) {
+                return res.status(400).json({
+                    error: '画像は最大5枚までアップロード可能です'
+                });
+            }
+            
+            for (const img of images) {
+                if (!img.base64 || !img.mimeType) {
+                    return res.status(400).json({
+                        error: '不正な画像形式です'
+                    });
+                }
+                
+                // Base64のサイズチェック（約10MB）
+                if (img.base64.length > 13_400_000) {
+                    return res.status(400).json({
+                        error: '画像サイズが大きすぎます（最大10MB）'
+                    });
+                }
+                
+                // MIMEタイプの検証
+                const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(img.mimeType)) {
+                    return res.status(400).json({
+                        error: 'サポートされていない画像形式です'
+                    });
+                }
+            }
+        }
         
-        const prompt = buildPrompt(hasTextData, patientData, images);
+        // 患者データのサニタイジング
+        const sanitizedPatientData = sanitizePatientData(patientData);
+        
+        // プロンプトの構築
+        const hasTextData = Object.values(sanitizedPatientData || {}).some(value => value && value.toString().trim() !== '');
+        
+        const prompt = buildPrompt(hasTextData, sanitizedPatientData, images);
         
         // OpenAI APIコール
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
