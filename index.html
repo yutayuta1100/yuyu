@@ -89,50 +89,70 @@
                 <h2 data-i18n="inputTitle">患者情報入力</h2>
                 <p style="margin-bottom: 20px; color: #7f8c8d;" data-i18n="inputNote">※画像のみ、またはテキスト入力のみ、両方の組み合わせでもICF分類が可能です</p>
                 <form id="patientForm">
-                    <div class="form-group">
-                        <label for="age" data-i18n="age">年齢</label>
-                        <input type="number" id="age" name="age" min="0" max="150">
+                    <!-- 主要機能：画像アップロード -->
+                    <div class="primary-feature">
+                        <h3 data-i18n="primaryMethod">画像から分類（推奨）</h3>
+                        <div class="form-group">
+                            <label for="imageUpload" data-i18n="imageUpload">画像アップロード</label>
+                            <div class="upload-area">
+                                <input type="file" id="imageUpload" name="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" multiple>
+                                <div class="upload-prompt">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <p data-i18n="uploadPrompt">医療記録や検査結果の画像をドラッグ＆ドロップ<br>またはクリックして選択</p>
+                                </div>
+                            </div>
+                            <small data-i18n="imageUploadHelp">医療記録や検査結果の画像をアップロードできます（複数可）<br>対応形式: PNG, JPEG, GIF, WebP</small>
+                            <div class="privacy-notice">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle; margin-right: 5px;">
+                                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm1 13H7v-2h2v2zm0-3H7V3h2v7z"/>
+                                </svg>
+                                <small data-i18n="privacyNotice">プライバシー保護: アップロードされた画像は処理後直ちに削除され、サーバーには保存されません。</small>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="gender" data-i18n="gender">性別</label>
-                        <select id="gender" name="gender">
-                            <option value="" data-i18n="selectOption">選択してください</option>
-                            <option value="male" data-i18n="male">男性</option>
-                            <option value="female" data-i18n="female">女性</option>
-                            <option value="other" data-i18n="other">その他</option>
-                        </select>
-                    </div>
+                    <!-- オプション：手動入力 -->
+                    <div class="optional-feature">
+                        <h3 data-i18n="optionalMethod">手動入力（オプション）</h3>
+                        <div class="collapsible-content">
+                            <div class="form-group">
+                                <label for="age" data-i18n="age">年齢</label>
+                                <input type="number" id="age" name="age" min="0" max="150">
+                            </div>
 
-                    <div class="form-group">
-                        <label for="diagnosis" data-i18n="diagnosis">診断名</label>
-                        <input type="text" id="diagnosis" name="diagnosis">
-                    </div>
+                            <div class="form-group">
+                                <label for="gender" data-i18n="gender">性別</label>
+                                <select id="gender" name="gender">
+                                    <option value="" data-i18n="selectOption">選択してください</option>
+                                    <option value="male" data-i18n="male">男性</option>
+                                    <option value="female" data-i18n="female">女性</option>
+                                    <option value="other" data-i18n="other">その他</option>
+                                </select>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="symptoms" data-i18n="symptoms">症状・状態</label>
-                        <textarea id="symptoms" name="symptoms" rows="4" placeholder="患者の症状、身体機能、活動状況、参加状況などを詳しく記載してください" data-i18n-placeholder="symptomsPlaceholder"></textarea>
-                    </div>
+                            <div class="form-group">
+                                <label for="diagnosis" data-i18n="diagnosis">診断名</label>
+                                <input type="text" id="diagnosis" name="diagnosis">
+                            </div>
 
-                    <div class="form-group">
-                        <label for="environmentalFactors" data-i18n="environmentalFactors">環境因子</label>
-                        <textarea id="environmentalFactors" name="environmentalFactors" rows="3" placeholder="家族構成、住環境、社会的支援など" data-i18n-placeholder="environmentalFactorsPlaceholder"></textarea>
-                    </div>
+                            <div class="form-group">
+                                <label for="symptoms" data-i18n="symptoms">症状・状態</label>
+                                <textarea id="symptoms" name="symptoms" rows="4" placeholder="患者の症状、身体機能、活動状況、参加状況などを詳しく記載してください" data-i18n-placeholder="symptomsPlaceholder"></textarea>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="personalFactors" data-i18n="personalFactors">個人因子</label>
-                        <textarea id="personalFactors" name="personalFactors" rows="3" placeholder="職業、趣味、生活習慣など" data-i18n-placeholder="personalFactorsPlaceholder"></textarea>
-                    </div>
+                            <div class="form-group">
+                                <label for="environmentalFactors" data-i18n="environmentalFactors">環境因子</label>
+                                <textarea id="environmentalFactors" name="environmentalFactors" rows="3" placeholder="家族構成、住環境、社会的支援など" data-i18n-placeholder="environmentalFactorsPlaceholder"></textarea>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="imageUpload" data-i18n="imageUpload">画像アップロード</label>
-                        <input type="file" id="imageUpload" name="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" multiple>
-                        <small data-i18n="imageUploadHelp">医療記録や検査結果の画像をアップロードできます（複数可）<br>対応形式: PNG, JPEG, GIF, WebP</small>
-                        <div class="privacy-notice">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle; margin-right: 5px;">
-                                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm1 13H7v-2h2v2zm0-3H7V3h2v7z"/>
-                            </svg>
-                            <small data-i18n="privacyNotice">プライバシー保護: アップロードされた画像は処理後直ちに削除され、サーバーには保存されません。</small>
+                            <div class="form-group">
+                                <label for="personalFactors" data-i18n="personalFactors">個人因子</label>
+                                <textarea id="personalFactors" name="personalFactors" rows="3" placeholder="職業、趣味、生活習慣など" data-i18n-placeholder="personalFactorsPlaceholder"></textarea>
+                            </div>
                         </div>
                     </div>
 

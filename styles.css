@@ -241,6 +241,115 @@ textarea {
     color: #0c5460;
 }
 
+/* 主要機能とオプション機能のスタイル */
+.primary-feature {
+    background: #f0f7ff;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.primary-feature h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.optional-feature {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.optional-feature h3 {
+    color: #6c757d;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    padding-left: 25px;
+}
+
+.optional-feature h3::before {
+    content: '▼';
+    position: absolute;
+    left: 0;
+    transition: transform 0.3s;
+}
+
+.optional-feature.collapsed h3::before {
+    transform: rotate(-90deg);
+}
+
+.collapsible-content {
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+}
+
+.optional-feature.collapsed .collapsible-content {
+    max-height: 0;
+}
+
+/* アップロードエリアのスタイル */
+.upload-area {
+    position: relative;
+    border: 2px dashed #3498db;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    background: #f8fcff;
+    transition: all 0.3s;
+}
+
+.upload-area:hover {
+    background: #e8f4fd;
+    border-color: #2980b9;
+}
+
+.upload-area input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload-prompt {
+    pointer-events: none;
+}
+
+.upload-prompt svg {
+    color: #3498db;
+    margin-bottom: 10px;
+}
+
+.upload-prompt p {
+    color: #34495e;
+    font-size: 16px;
+    margin: 0;
+}
+
+.upload-area.dragover {
+    background: #e8f4fd;
+    border-color: #2980b9;
+}
+
+/* ファイル選択時の表示 */
+.file-selected {
+    background: #d4edda;
+    border-color: #28a745;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
 .loading {
     text-align: center;
     padding: 40px;
@@ -415,5 +524,31 @@ textarea {
     
     .icf-item ul {
         margin-left: 20px;
+    }
+    
+    /* アップロードエリアのモバイル対応 */
+    .upload-area {
+        padding: 20px;
+    }
+    
+    .upload-prompt svg {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .upload-prompt p {
+        font-size: 14px;
+    }
+    
+    .primary-feature, .optional-feature {
+        padding: 15px;
+    }
+    
+    .primary-feature h3 {
+        font-size: 18px;
+    }
+    
+    .optional-feature h3 {
+        font-size: 16px;
     }
 }

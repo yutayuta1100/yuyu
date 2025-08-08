@@ -31,7 +31,11 @@ const translations = {
         inputRequired: "テキスト情報または画像のいずれかを入力してください",
         termsLink: "利用規約・プライバシーポリシー",
         copyright: "© 2024 ICF自動分類システム",
-        privacyNotice: "プライバシー保護: アップロードされた画像は処理後直ちに削除され、サーバーには保存されません。"
+        privacyNotice: "プライバシー保護: アップロードされた画像は処理後直ちに削除され、サーバーには保存されません。",
+        primaryMethod: "画像から分類（推奨）",
+        optionalMethod: "手動入力（オプション）",
+        uploadPrompt: "医療記録や検査結果の画像をドラッグ＆ドロップ<br>またはクリックして選択",
+        filesSelected: "{count}個のファイルが選択されました"
     },
     en: {
         title: "ICF Automatic Classification System",
@@ -62,7 +66,11 @@ const translations = {
         inputRequired: "Please enter either text information or images",
         termsLink: "Terms of Service & Privacy Policy",
         copyright: "© 2024 ICF Automatic Classification System",
-        privacyNotice: "Privacy Protection: Uploaded images are deleted immediately after processing and are not stored on the server."
+        privacyNotice: "Privacy Protection: Uploaded images are deleted immediately after processing and are not stored on the server.",
+        primaryMethod: "Classify from Images (Recommended)",
+        optionalMethod: "Manual Input (Optional)",
+        uploadPrompt: "Drag & drop medical records or test result images<br>or click to select",
+        filesSelected: "{count} file(s) selected"
     }
 };
 
@@ -106,6 +114,57 @@ document.addEventListener('DOMContentLoaded', () => {
         setLanguage(currentLang === 'ja' ? 'en' : 'ja');
     });
     
+    // オプション機能の折りたたみ
+    const optionalFeature = document.querySelector('.optional-feature');
+    const optionalTitle = optionalFeature.querySelector('h3');
+    
+    // 初期状態では折りたたむ
+    optionalFeature.classList.add('collapsed');
+    
+    optionalTitle.addEventListener('click', () => {
+        optionalFeature.classList.toggle('collapsed');
+    });
+    
+    // ドラッグ&ドロップ機能
+    const uploadArea = document.querySelector('.upload-area');
+    const fileInput = document.getElementById('imageUpload');
+    
+    // ドラッグオーバー
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    // ドラッグリーブ
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+    
+    // ドロップ
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files);
+        }
+    });
+    
+    // ファイル選択時の処理を共通化
+    function handleFileSelect(files) {
+        const fileCount = files.length;
+        const uploadPrompt = document.querySelector('.upload-prompt p');
+        if (fileCount > 0) {
+            uploadPrompt.innerHTML = translate('filesSelected').replace('{count}', fileCount);
+            uploadPrompt.style.color = '#27ae60';
+        } else {
+            uploadPrompt.innerHTML = translate('uploadPrompt');
+            uploadPrompt.style.color = '#34495e';
+        }
+    }
+    
     // ファイル選択時の動作確認とファイル形式チェック
     const imageUpload = document.getElementById('imageUpload');
     imageUpload.addEventListener('change', (e) => {
@@ -122,6 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (invalidFiles.length > 0) {
             alert(`${translate('imageFormatError')}\n${invalidFiles.join('\n')}\n\n${currentLang === 'ja' ? '対応形式: PNG, JPEG, GIF, WebP' : 'Supported formats: PNG, JPEG, GIF, WebP'}`);
             e.target.value = ''; // ファイル選択をクリア
+            handleFileSelect([]); // プロンプトをリセット
+        } else {
+            handleFileSelect(files);
         }
     });
 
