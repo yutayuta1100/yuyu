@@ -30,7 +30,8 @@ const translations = {
         imageFormatError: "以下のファイルはサポートされていません:",
         inputRequired: "テキスト情報または画像のいずれかを入力してください",
         termsLink: "利用規約・プライバシーポリシー",
-        copyright: "© 2024 ICF自動分類システム"
+        copyright: "© 2024 ICF自動分類システム",
+        privacyNotice: "プライバシー保護: アップロードされた画像は処理後直ちに削除され、サーバーには保存されません。"
     },
     en: {
         title: "ICF Automatic Classification System",
@@ -60,7 +61,8 @@ const translations = {
         imageFormatError: "The following files are not supported:",
         inputRequired: "Please enter either text information or images",
         termsLink: "Terms of Service & Privacy Policy",
-        copyright: "© 2024 ICF Automatic Classification System"
+        copyright: "© 2024 ICF Automatic Classification System",
+        privacyNotice: "Privacy Protection: Uploaded images are deleted immediately after processing and are not stored on the server."
     }
 };
 
@@ -168,6 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsSection.style.display = 'block';
     resultsContent.innerHTML = `<div class="loading">${translate('loading')}</div>`;
     
+    // 処理中は送信ボタンを無効化
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    
     try {
         // サーバーにAPIリクエストを送信
         const apiUrl = window.location.protocol === 'file:' 
@@ -194,15 +200,63 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
         console.error('Classification error:', error);
         resultsContent.innerHTML = `<div class="error">${translate('error')}${error.message}</div>`;
+    } finally {
+        // 重要: 画像データをメモリから完全に削除
+        cleanupImageData();
+        
+        // 送信ボタンを再度有効化
+        submitBtn.disabled = false;
+        
+        // フォームをリセット（画像ファイルの参照を削除）
+        document.getElementById('imageUpload').value = '';
+        
+        // ガベージコレクションを促進
+        images = null;
+        imageDataPromises.length = 0;
     }
 });
+
+// 画像データのクリーンアップ関数
+function cleanupImageData() {
+    // キャンバス要素をすべて削除
+    const canvases = document.querySelectorAll('canvas');
+    canvases.forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        canvas.remove();
+    });
+    
+    // 画像要素をすべて削除
+    const tempImages = document.querySelectorAll('img[data-temp="true"]');
+    tempImages.forEach(img => {
+        img.src = '';
+        img.remove();
+    });
+    
+    // FileReaderのクリーンアップ
+    if (window.fileReaders) {
+        window.fileReaders.forEach(reader => {
+            if (reader.readyState === FileReader.LOADING) {
+                reader.abort();
+            }
+        });
+        window.fileReaders = [];
+    }
+}
+
+// グローバルでFileReaderを追跡
+window.fileReaders = [];
 
 function readImageAsBase64(file) {
     return new Promise((resolve, reject) => {
         // 画像のリサイズ処理を追加
         const reader = new FileReader();
+        window.fileReaders.push(reader); // FileReaderを追跡
         reader.onload = (e) => {
             const img = new Image();
+            img.setAttribute('data-temp', 'true'); // 一時画像としてマーク
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');

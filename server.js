@@ -108,8 +108,12 @@ function sanitizePatientData(data) {
 
 // ICF分類APIエンドポイント
 app.post('/api/classify', async (req, res) => {
+    // 画像データを一時的にのみ処理し、保存しない
+    let images = null;
+    let patientData = null;
+    
     try {
-        const { patientData, images } = req.body;
+        ({ patientData, images } = req.body);
         
         // 入力検証
         if (!patientData && (!images || images.length === 0)) {
@@ -126,8 +130,11 @@ app.post('/api/classify', async (req, res) => {
                 });
             }
             
-            for (const img of images) {
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
                 if (!img.base64 || !img.mimeType) {
+                    // セキュリティのため、画像データをクリア
+                    images = null;
                     return res.status(400).json({
                         error: '不正な画像形式です'
                     });
@@ -135,6 +142,7 @@ app.post('/api/classify', async (req, res) => {
                 
                 // Base64のサイズチェック（約10MB）
                 if (img.base64.length > 13_400_000) {
+                    images = null;
                     return res.status(400).json({
                         error: '画像サイズが大きすぎます（最大10MB）'
                     });
@@ -143,6 +151,7 @@ app.post('/api/classify', async (req, res) => {
                 // MIMEタイプの検証
                 const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
                 if (!allowedTypes.includes(img.mimeType)) {
+                    images = null;
                     return res.status(400).json({
                         error: 'サポートされていない画像形式です'
                     });
@@ -218,6 +227,18 @@ app.post('/api/classify', async (req, res) => {
         res.status(500).json({
             error: 'サーバーエラーが発生しました'
         });
+    } finally {
+        // 重要: メモリから画像データを完全に削除
+        images = null;
+        patientData = null;
+        
+        // リクエストボディをクリア
+        req.body = null;
+        
+        // ガベージコレクションを促進
+        if (global.gc) {
+            global.gc();
+        }
     }
 });
 

@@ -227,6 +227,20 @@ textarea {
 .icf-section:nth-child(6) .icf-section-title { background: #f39c12; } /* 環境因子 */
 .icf-section:nth-child(7) .icf-section-title { background: #9b59b6; } /* 個人因子 */
 
+/* プライバシー通知 */
+.privacy-notice {
+    background: #e8f4fd;
+    border: 1px solid #bee5ff;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+    color: #0c5460;
+}
+
+.privacy-notice svg {
+    color: #0c5460;
+}
+
 .loading {
     text-align: center;
     padding: 40px;
