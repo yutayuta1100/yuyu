@@ -82,7 +82,7 @@ function sanitizePatientData(data) {
     if (!data) return null;
     
     const sanitized = {};
-    const allowedFields = ['patientId', 'age', 'gender', 'diagnosis', 'symptoms', 'environmentalFactors', 'personalFactors'];
+    const allowedFields = ['age', 'gender', 'diagnosis', 'symptoms', 'environmentalFactors', 'personalFactors'];
     
     for (const field of allowedFields) {
         if (data[field]) {
@@ -231,8 +231,7 @@ function buildPrompt(hasTextData, patientData, images) {
 ${hasTextData ? '以下の患者情報' : ''}${hasTextData && images && images.length > 0 ? 'と' : ''}${images && images.length > 0 ? 'アップロードされた画像' : ''}を分析し、ICFの6つの構成要素に基づいたサマリーを生成してください。
 **ICFコードと評価点は出力せず、入力テキストの具体的な内容を抽出・要約した結果を生成することがゴールです。**
 
-${hasTextData && patientData ? `入力情報:${patientData.patientId ? `
-- 患者ID: ${patientData.patientId}` : ''}${patientData.age ? `
+${hasTextData && patientData ? `入力情報:${patientData.age ? `
 - 年齢: ${patientData.age}歳` : ''}${patientData.gender ? `
 - 性別: ${patientData.gender === 'male' ? '男性' : patientData.gender === 'female' ? '女性' : 'その他'}` : ''}${patientData.diagnosis ? `
 - 診断名: ${patientData.diagnosis}` : ''}${patientData.symptoms ? `

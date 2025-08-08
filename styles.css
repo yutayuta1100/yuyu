@@ -147,53 +147,85 @@ textarea {
     margin-bottom: 20px;
 }
 
-.icf-category {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border-left: 4px solid #3498db;
+/* ICF分類表スタイル */
+.icf-classification-table {
+    margin-top: 20px;
 }
 
-.icf-category h3 {
+.icf-table-title {
+    text-align: center;
     color: #2c3e50;
-    margin-bottom: 10px;
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 10px;
 }
 
-.icf-items {
-    margin-top: 10px;
+.icf-section {
+    background: #ffffff;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.icf-section-title {
+    background: #34495e;
+    color: white;
+    padding: 15px 20px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.icf-section-content {
+    padding: 20px;
 }
 
 .icf-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .icf-item:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
 .icf-item strong {
     color: #2c3e50;
     margin-right: 8px;
+    display: inline-block;
+    min-width: 120px;
 }
 
 .icf-item ul {
-    margin: 10px 0 10px 20px;
+    margin: 10px 0 10px 140px;
     padding-left: 20px;
 }
 
 .icf-item ul li {
-    margin: 5px 0;
+    margin: 8px 0;
     list-style-type: disc;
+    line-height: 1.6;
 }
 
-.icf-category h3 {
-    color: #2c3e50;
-    font-size: 18px;
-    margin-bottom: 15px;
-    font-weight: 700;
+.icf-item.no-data {
+    color: #95a5a6;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
 }
+
+/* セクションごとの色分け */
+.icf-section:nth-child(2) .icf-section-title { background: #2c3e50; } /* 健康状態 */
+.icf-section:nth-child(3) .icf-section-title { background: #e74c3c; } /* 心身機能・身体構造 */
+.icf-section:nth-child(4) .icf-section-title { background: #3498db; } /* 活動 */
+.icf-section:nth-child(5) .icf-section-title { background: #2ecc71; } /* 参加 */
+.icf-section:nth-child(6) .icf-section-title { background: #f39c12; } /* 環境因子 */
+.icf-section:nth-child(7) .icf-section-title { background: #9b59b6; } /* 個人因子 */
 
 .loading {
     text-align: center;
@@ -345,5 +377,29 @@ textarea {
     .ad-footer {
         max-width: 100%;
         min-height: 100px;
+    }
+    
+    /* ICF分類表のモバイル対応 */
+    .icf-table-title {
+        font-size: 20px;
+    }
+    
+    .icf-section-title {
+        font-size: 16px;
+        padding: 12px 15px;
+    }
+    
+    .icf-section-content {
+        padding: 15px;
+    }
+    
+    .icf-item strong {
+        display: block;
+        min-width: auto;
+        margin-bottom: 5px;
+    }
+    
+    .icf-item ul {
+        margin-left: 20px;
     }
 }

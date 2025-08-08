@@ -7,7 +7,6 @@ const translations = {
         subtitle: "患者情報を入力して、ICF（国際生活機能分類）に基づく分類を行います",
         inputTitle: "患者情報入力",
         inputNote: "※画像のみ、またはテキスト入力のみ、両方の組み合わせでもICF分類が可能です",
-        patientId: "患者ID",
         age: "年齢",
         gender: "性別",
         selectOption: "選択してください",
@@ -38,7 +37,6 @@ const translations = {
         subtitle: "Enter patient information for classification based on ICF (International Classification of Functioning)",
         inputTitle: "Patient Information Input",
         inputNote: "※ICF classification is possible with images only, text input only, or a combination of both",
-        patientId: "Patient ID",
         age: "Age",
         gender: "Gender",
         selectOption: "Please select",
@@ -132,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageFiles = document.getElementById('imageUpload').files;
     console.log('Image files:', imageFiles.length);
     
-    const hasTextInput = ['patientId', 'age', 'gender', 'diagnosis', 'symptoms', 'environmentalFactors', 'personalFactors']
+    const hasTextInput = ['age', 'gender', 'diagnosis', 'symptoms', 'environmentalFactors', 'personalFactors']
         .some(field => {
             const value = e.target[field].value;
             return value && value.trim() !== '';
@@ -145,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const formData = new FormData(e.target);
     const patientData = {
-        patientId: formData.get('patientId'),
         age: formData.get('age'),
         gender: formData.get('gender'),
         diagnosis: formData.get('diagnosis'),
@@ -257,197 +254,187 @@ function readImageAsBase64(file) {
 function displayResults(classification) {
     const resultsContent = document.getElementById('resultsContent');
     
-    let html = '';
+    // ICF分類表のタイトル
+    let html = '<div class="icf-classification-table">';
+    html += `<h3 class="icf-table-title">${currentLang === 'ja' ? 'ICF分類表' : 'ICF Classification Table'}</h3>`;
     
-    // 健康状態
-    if (classification.healthCondition) {
-        html += `
-            <div class="icf-category">
-                <h3>【健康状態】</h3>
-                <div class="icf-items">
-        `;
-        
+    // 1. 健康状態
+    html += `
+        <div class="icf-section">
+            <h4 class="icf-section-title">${currentLang === 'ja' ? '1. 健康状態' : '1. Health Condition'}</h4>
+            <div class="icf-section-content">
+    `;
+    
+    if (classification.healthCondition && Object.values(classification.healthCondition).some(v => v)) {
         if (classification.healthCondition.currentMedicalHistory) {
-            html += `<div class="icf-item"><strong>現病歴:</strong> ${classification.healthCondition.currentMedicalHistory}</div>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '現病歴' : 'Current Medical History'}:</strong> ${classification.healthCondition.currentMedicalHistory}</div>`;
         }
-        
         if (classification.healthCondition.pastMedicalHistory) {
-            html += `<div class="icf-item"><strong>既往歴:</strong> ${classification.healthCondition.pastMedicalHistory}</div>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '既往歴' : 'Past Medical History'}:</strong> ${classification.healthCondition.pastMedicalHistory}</div>`;
         }
-        
         if (classification.healthCondition.overview) {
-            html += `<div class="icf-item"><strong>全体像:</strong> ${classification.healthCondition.overview}</div>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '全体像' : 'Overview'}:</strong> ${classification.healthCondition.overview}</div>`;
         }
-        
-        html += `
-                </div>
-            </div>
-        `;
+    } else {
+        html += `<div class="icf-item no-data">${currentLang === 'ja' ? 'データなし' : 'No data'}</div>`;
     }
     
-    // 心身機能と身体構造
-    if (classification.bodyFunctionsAndStructures) {
-        html += `
-            <div class="icf-category">
-                <h3>【心身機能と身体構造】</h3>
-                <div class="icf-items">
-        `;
-        
+    html += '</div></div>';
+    
+    // 2. 心身機能・身体構造
+    html += `
+        <div class="icf-section">
+            <h4 class="icf-section-title">${currentLang === 'ja' ? '2. 心身機能・身体構造' : '2. Body Functions & Structures'}</h4>
+            <div class="icf-section-content">
+    `;
+    
+    if (classification.bodyFunctionsAndStructures && Object.values(classification.bodyFunctionsAndStructures).some(v => v && v.length > 0)) {
         if (classification.bodyFunctionsAndStructures.functions && classification.bodyFunctionsAndStructures.functions.length > 0) {
-            html += `<div class="icf-item"><strong>心身機能:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '心身機能' : 'Body Functions'}:</strong><ul>`;
             classification.bodyFunctionsAndStructures.functions.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
         if (classification.bodyFunctionsAndStructures.structures && classification.bodyFunctionsAndStructures.structures.length > 0) {
-            html += `<div class="icf-item"><strong>身体構造:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '身体構造' : 'Body Structures'}:</strong><ul>`;
             classification.bodyFunctionsAndStructures.structures.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
         if (classification.bodyFunctionsAndStructures.impairments && classification.bodyFunctionsAndStructures.impairments.length > 0) {
-            html += `<div class="icf-item"><strong>機能と構造障害:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '機能・構造障害' : 'Impairments'}:</strong><ul>`;
             classification.bodyFunctionsAndStructures.impairments.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
-        html += `
-                </div>
-            </div>
-        `;
+    } else {
+        html += `<div class="icf-item no-data">${currentLang === 'ja' ? 'データなし' : 'No data'}</div>`;
     }
     
-    // 活動
-    if (classification.activities) {
-        html += `
-            <div class="icf-category">
-                <h3>【活動】</h3>
-                <div class="icf-items">
-        `;
-        
+    html += '</div></div>';
+    
+    // 3. 活動
+    html += `
+        <div class="icf-section">
+            <h4 class="icf-section-title">${currentLang === 'ja' ? '3. 活動' : '3. Activities'}</h4>
+            <div class="icf-section-content">
+    `;
+    
+    if (classification.activities && Object.values(classification.activities).some(v => v && v.length > 0)) {
         if (classification.activities.capacity && classification.activities.capacity.length > 0) {
-            html += `<div class="icf-item"><strong>能力:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '能力' : 'Capacity'}:</strong><ul>`;
             classification.activities.capacity.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
         if (classification.activities.performance && classification.activities.performance.length > 0) {
-            html += `<div class="icf-item"><strong>実行状況:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '実行状況' : 'Performance'}:</strong><ul>`;
             classification.activities.performance.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
         if (classification.activities.limitations && classification.activities.limitations.length > 0) {
-            html += `<div class="icf-item"><strong>活動制限:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '活動制限' : 'Activity Limitations'}:</strong><ul>`;
             classification.activities.limitations.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
-        html += `
-                </div>
-            </div>
-        `;
+    } else {
+        html += `<div class="icf-item no-data">${currentLang === 'ja' ? 'データなし' : 'No data'}</div>`;
     }
     
-    // 参加
-    if (classification.participation) {
-        html += `
-            <div class="icf-category">
-                <h3>【参加】</h3>
-                <div class="icf-items">
-        `;
-        
+    html += '</div></div>';
+    
+    // 4. 参加
+    html += `
+        <div class="icf-section">
+            <h4 class="icf-section-title">${currentLang === 'ja' ? '4. 参加' : '4. Participation'}</h4>
+            <div class="icf-section-content">
+    `;
+    
+    if (classification.participation && Object.values(classification.participation).some(v => v && v.length > 0)) {
         if (classification.participation.participation && classification.participation.participation.length > 0) {
-            html += `<div class="icf-item"><strong>参加:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '参加' : 'Participation'}:</strong><ul>`;
             classification.participation.participation.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
         if (classification.participation.restrictions && classification.participation.restrictions.length > 0) {
-            html += `<div class="icf-item"><strong>参加制約:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '参加制約' : 'Participation Restrictions'}:</strong><ul>`;
             classification.participation.restrictions.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
-        html += `
-                </div>
-            </div>
-        `;
+    } else {
+        html += `<div class="icf-item no-data">${currentLang === 'ja' ? 'データなし' : 'No data'}</div>`;
     }
     
-    // 環境因子
-    if (classification.environmentalFactors) {
-        html += `
-            <div class="icf-category">
-                <h3>【環境因子】</h3>
-                <div class="icf-items">
-        `;
-        
+    html += '</div></div>';
+    
+    // 5. 環境因子
+    html += `
+        <div class="icf-section">
+            <h4 class="icf-section-title">${currentLang === 'ja' ? '5. 環境因子' : '5. Environmental Factors'}</h4>
+            <div class="icf-section-content">
+    `;
+    
+    if (classification.environmentalFactors && Object.values(classification.environmentalFactors).some(v => v && v.length > 0)) {
         if (classification.environmentalFactors.physical && classification.environmentalFactors.physical.length > 0) {
-            html += `<div class="icf-item"><strong>物的な環境:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '物的環境' : 'Physical Environment'}:</strong><ul>`;
             classification.environmentalFactors.physical.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
         if (classification.environmentalFactors.human && classification.environmentalFactors.human.length > 0) {
-            html += `<div class="icf-item"><strong>人的な環境:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '人的環境' : 'Human Environment'}:</strong><ul>`;
             classification.environmentalFactors.human.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
         if (classification.environmentalFactors.social && classification.environmentalFactors.social.length > 0) {
-            html += `<div class="icf-item"><strong>社会的な環境:</strong><ul>`;
+            html += `<div class="icf-item"><strong>${currentLang === 'ja' ? '社会的環境' : 'Social Environment'}:</strong><ul>`;
             classification.environmentalFactors.social.forEach(item => {
                 html += `<li>${item}</li>`;
             });
             html += `</ul></div>`;
         }
-        
-        html += `
-                </div>
-            </div>
-        `;
+    } else {
+        html += `<div class="icf-item no-data">${currentLang === 'ja' ? 'データなし' : 'No data'}</div>`;
     }
     
-    // 個人因子
+    html += '</div></div>';
+    
+    // 6. 個人因子
+    html += `
+        <div class="icf-section">
+            <h4 class="icf-section-title">${currentLang === 'ja' ? '6. 個人因子' : '6. Personal Factors'}</h4>
+            <div class="icf-section-content">
+    `;
+    
     if (classification.personalFactors && classification.personalFactors.length > 0) {
-        html += `
-            <div class="icf-category">
-                <h3>【個人因子】</h3>
-                <div class="icf-items">
-                    <ul>
-        `;
-        
+        html += '<ul>';
         classification.personalFactors.forEach(item => {
             html += `<li>${item}</li>`;
         });
-        
-        html += `
-                    </ul>
-                </div>
-            </div>
-        `;
+        html += '</ul>';
+    } else {
+        html += `<div class="icf-item no-data">${currentLang === 'ja' ? 'データなし' : 'No data'}</div>`;
     }
+    
+    html += '</div></div>';
+    
+    // 分類表を閉じる
+    html += '</div>';
     
     resultsContent.innerHTML = html;
 }
